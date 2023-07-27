@@ -30,7 +30,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 			var optionsBuilder = new DbContextOptionsBuilder<NorthwindContext>();
 			//new SqlServerDbContextOptionsBuilder(optionsBuilder);
 
-			optionsBuilder.UseSqlServer("Server=.;Database=NorthwindEFCore;Integrated Security=SSPI;Encrypt=true;TrustServerCertificate=true");
+			optionsBuilder.UseSqlServer(Settings.NorthwindConnectionString);
 			optionsBuilder.UseLoggerFactory(TestUtils.LoggerFactory);
 
 			_options = optionsBuilder.Options;
@@ -88,7 +88,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		public void TestToList([Values(true, false)] bool enableFilter)
 		{
 			using (var ctx = CreateContext(enableFilter))
-			using (var db = ctx.CreateLinqToDbConnection())
+			using (var db = ctx.CreateLinqToDBConnection())
 			{
 				var items = db.GetTable<Order>()
 					.LoadWith(d => d.OrderDetails)
@@ -170,7 +170,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		[Test]
 		public void TestCreateFromOptions()
 		{
-			using (var db = _options.CreateLinqToDbConnection())
+			using (var db = _options.CreateLinqToDBConnection())
 			{
 			}
 		}
@@ -215,7 +215,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 			using (var ctx = CreateContext(enableFilter))
 			{
 				using (var transaction = ctx.Database.BeginTransaction())
-				using (var db = ctx.CreateLinqToDbConnection())
+				using (var db = ctx.CreateLinqToDBConnection())
 				{
 
 					var test1 = await ctx.Products.Where(p => p.ProductName.StartsWith("U")).MaxAsync(p => p.QuantityPerUnit);
@@ -236,7 +236,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		public void TestView([Values(true, false)] bool enableFilter)
 		{
 			using (var ctx = CreateContext(enableFilter))
-			using (var db = ctx.CreateLinqToDbConnection())
+			using (var db = ctx.CreateLinqToDBConnection())
 			{
 				var query = ProductQuery(ctx)
 					.ToLinqToDB(db)
@@ -307,7 +307,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		{
 			using (var ctx = CreateContext(false))
 			{
-				var ms = LinqToDBForEFTools.GetMappingSchema(ctx.Model, ctx);
+				var ms = LinqToDBForEFTools.GetMappingSchema(ctx.Model, ctx, null);
 				
 				var customerPk = ms.GetAttribute<ColumnAttribute>(typeof(Customer),
 					MemberHelper.MemberOf<Customer>(c => c.CustomerId));
@@ -315,7 +315,6 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 				Assert.NotNull(customerPk);
 				Assert.AreEqual(true, customerPk!.IsPrimaryKey);
 				Assert.AreEqual(0, customerPk.PrimaryKeyOrder);
-
 			}
 		}
 
@@ -324,7 +323,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		{
 			using (var ctx = CreateContext(false))
 			{
-				var ms = LinqToDBForEFTools.GetMappingSchema(ctx.Model, ctx);
+				var ms = LinqToDBForEFTools.GetMappingSchema(ctx.Model, ctx, null);
 				
 				var associationOrder = ms.GetAttribute<AssociationAttribute>(typeof(Customer),
 					MemberHelper.MemberOf<Customer>(c => c.Orders));
@@ -334,7 +333,6 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 				Assert.That(associationOrder.OtherKey, Is.EqualTo("CustomerId"));
 			}
 		}
-
 
 		[Repeat(2)]
 		[Test]
@@ -753,7 +751,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		{
 			using (var ctx = CreateContext(enableFilter))
 			{
-				using var db = ctx.CreateLinqToDbContext();
+				using var db = ctx.CreateLinqToDBContext();
 				using var temp = db.CreateTempTable(ctx.Employees, "#TestEmployees");
 
 				Assert.AreEqual(ctx.Employees.Count(), temp.Count());
@@ -834,6 +832,37 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 				AreEqual(resultEF, result);
 
 				str.Should().Contain("Tagged query");
+			}
+		}
+
+
+		[Test]
+		public void TestTemporalTables([Values(true, false)] bool enableFilter)
+		{
+			using (var ctx = CreateContext(enableFilter))
+			{
+				var query1 = ctx.Products.TemporalAsOf(DateTime.UtcNow);
+				var query2 = ctx.Products.TemporalFromTo(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+				var query3 = ctx.Products.TemporalAll();
+				var query4 = ctx.Products.TemporalBetween(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+				var query5 = ctx.Products.TemporalContainedIn(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow);
+
+				var result1 = query1.ToLinqToDB().ToArray();
+				var result2 = query2.ToLinqToDB().ToArray();
+				var result3 = query3.ToLinqToDB().ToArray();
+				var result4 = query4.ToLinqToDB().ToArray();
+				var result5 = query5.ToLinqToDB().ToArray();
+
+				var allQuery =
+					from p in ctx.Products.ToLinqToDB()
+					from q1 in ctx.Products.TemporalAsOf(DateTime.UtcNow).Where(q => q.ProductId == p.ProductId).DefaultIfEmpty()
+					from q2 in ctx.Products.TemporalFromTo(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow).Where(q => q.ProductId == p.ProductId).DefaultIfEmpty()
+					from q3 in ctx.Products.TemporalAll().Where(q => q.ProductId == p.ProductId).DefaultIfEmpty()	
+					from q4 in ctx.Products.TemporalBetween(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow).Where(q => q.ProductId == p.ProductId).DefaultIfEmpty()
+					from q5 in ctx.Products.TemporalContainedIn(DateTime.UtcNow.AddDays(-1), DateTime.UtcNow).Where(q => q.ProductId == p.ProductId).DefaultIfEmpty()
+					select p;
+
+				var result = allQuery.ToArray();
 			}
 		}
 

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
+using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.EntityFrameworkCore.BaseTests;
 using LinqToDB.EntityFrameworkCore.SqlServer.Tests.Models.IssueModel;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<IssueContext>();
 
-			optionsBuilder.UseSqlServer("Server=.;Database=IssuesEFCore;Integrated Security=SSPI;Encrypt=true;TrustServerCertificate=true");
+			optionsBuilder.UseSqlServer(Settings.IssuesConnectionString);
 			optionsBuilder.UseLoggerFactory(TestUtils.LoggerFactory);
 
 			_options = optionsBuilder.Options;
@@ -74,12 +75,19 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 
 			var resultEF = query.ToArray();
 
-			using var db = ctx.CreateLinqToDbConnection();
+			using var db = ctx.CreateLinqToDBConnection();
 
 			_ = query.ToLinqToDB(db).ToArray();
 
 			Assert.That(db.LastQuery, Does.Not.Contain("INNER"));
 		}
 
+		[Test]
+		public void Issue321Test()
+		{
+			using var ctx = CreateContext();
+
+			var _ = ctx.Patents.AsSqlServer().ToLinqToDB().ToArray();
+		}
 	}
 }
