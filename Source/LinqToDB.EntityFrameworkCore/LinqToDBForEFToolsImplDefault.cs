@@ -179,6 +179,7 @@ namespace LinqToDB.EntityFrameworkCore
 				case ProviderName.PostgreSQL:
 					return CreatePostgreSqlProvider(PostgreSqlDefaultVersion, connectionInfo.ConnectionString);
 				case ProviderName.SQLite:
+				case ProviderName.SQLiteMS:
 					return SQLiteTools.GetDataProvider(provInfo.ProviderName);
 				case ProviderName.Firebird:
 					return FirebirdTools.GetDataProvider();
@@ -244,7 +245,7 @@ namespace LinqToDB.EntityFrameworkCore
 				case "Microsoft.EntityFrameworkCore.Sqlite":
 				case "Devart.Data.SQLite.EFCore":
 				{
-					return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLite };
+					return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLiteMS };
 				}
 
 				case "FirebirdSql.EntityFrameworkCore.Firebird":
@@ -292,7 +293,7 @@ namespace LinqToDB.EntityFrameworkCore
 						return new LinqToDBProviderInfo { ProviderName = ProviderName.Oracle };
 					case "SqliteConnection":
 					case "SQLiteConnection":
-						return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLite };
+						return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLiteMS };
 					case "JetConnection":
 						return new LinqToDBProviderInfo { ProviderName = ProviderName.Access };
 			}
@@ -320,7 +321,7 @@ namespace LinqToDB.EntityFrameworkCore
 					return new LinqToDBProviderInfo { ProviderName = ProviderName.SqlServer };
 				case "SqliteOptionsExtension":
 				case "SQLiteOptionsExtension":
-					return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLite };
+					return new LinqToDBProviderInfo { ProviderName = ProviderName.SQLiteMS };
 				case "SqlCeOptionsExtension":
 					return new LinqToDBProviderInfo { ProviderName = ProviderName.SqlCe };
 				case "FbOptionsExtension":
