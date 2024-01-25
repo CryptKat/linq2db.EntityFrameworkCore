@@ -1,7 +1,9 @@
 ﻿<Project>
 	<PropertyGroup>
-		<Version>7.3.0</Version>
-
+		<Version>1.0.0</Version>
+		<PackageId>linq2db.EntityFrameworkCore.SoftLider</PackageId>
+		<RepositoryUrl>https://github.com/softlidermd/linq2db.EntityFrameworkCore</RepositoryUrl>
+		
 		<Authors>Svyatoslav Danyliv, Igor Tkachev, Dmitry Lukashenko, Ilya Chudin</Authors>
 		<Product>Linq to DB</Product>
 		<Company>linq2db.net</Company>
@@ -39,4 +41,17 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<RunAnalyzers>true</RunAnalyzers>
 	</PropertyGroup>
+
+	<Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release'">
+		<PropertyGroup>
+			<!-- Get the output path of the NuGet package -->
+			<NuGetPackagePath>$(OutputPath)\$(PackageId).$(PackageVersion).nupkg</NuGetPackagePath>
+
+			<!-- Get the destination folder from the environment variable -->
+			<DestinationFolder>$(LocalNuGetFeedPath)</DestinationFolder>
+		</PropertyGroup>
+
+		<!-- Copy the NuGet package to the destination folder -->
+		<Copy SourceFiles="$(NuGetPackagePath)" DestinationFolder="$(DestinationFolder)" />
+	</Target>
 </Project>
