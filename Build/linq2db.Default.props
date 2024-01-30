@@ -8,7 +8,7 @@
 		<Product>Linq to DB</Product>
 		<Company>linq2db.net</Company>
 		<Copyright>2002-2023 linq2db.net</Copyright>
-		<RepositoryUrl>https://github.com/linq2db/linq2db.EntityFrameworkCore</RepositoryUrl>
+		<RepositoryUrl>https://github.com/softlidermd/linq2db.EntityFrameworkCore</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<LangVersion>latest</LangVersion>
