@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using LinqToDB.Reflection;
@@ -49,7 +50,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 
 		protected void AreEqual<T>(Func<T, T> fixSelector, IEnumerable<T> expected, IEnumerable<T> result, IEqualityComparer<T> comparer, bool allowEmpty = false)
 		{
-			AreEqual<T>(fixSelector, expected, result, comparer, null, allowEmpty);
+			AreEqual(fixSelector, expected, result, comparer, null, allowEmpty);
 		}
 
 		protected void AreEqual<T>(
@@ -70,8 +71,8 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			}
 
 			if (!allowEmpty)
-				Assert.AreNotEqual(0, expectedList.Count, "Expected list cannot be empty.");
-			Assert.AreEqual(expectedList.Count, resultList.Count, "Expected and result lists are different. Length: ");
+				Assert.That(expectedList, Is.Not.Empty, "Expected list cannot be empty.");
+			Assert.That(resultList, Has.Count.EqualTo(expectedList.Count), "Expected and result lists are different. Length: ");
 
 			var exceptExpectedList = resultList.Except(expectedList, comparer).ToList();
 			var exceptResultList = expectedList.Except(resultList, comparer).ToList();
@@ -88,13 +89,16 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 				for (var i = 0; i < resultList.Count; i++)
 				{
 					Debug.WriteLine("{0} {1} --- {2}", comparer.Equals(expectedList[i], resultList[i]) ? " " : "-", expectedList[i], resultList[i]);
-					message.AppendFormat("{0} {1} --- {2}", comparer.Equals(expectedList[i], resultList[i]) ? " " : "-", expectedList[i], resultList[i]);
+					message.AppendFormat(CultureInfo.InvariantCulture, "{0} {1} --- {2}", comparer.Equals(expectedList[i], resultList[i]) ? " " : "-", expectedList[i], resultList[i]);
 					message.AppendLine();
 				}
 			}
 
-			Assert.AreEqual(0, exceptExpected, $"Expected Was{Environment.NewLine}{message}");
-			Assert.AreEqual(0, exceptResult, $"Expect Result{Environment.NewLine}{message}");
+			Assert.Multiple(() =>
+			{
+				Assert.That(exceptExpected, Is.EqualTo(0), $"Expected Was{Environment.NewLine}{message}");
+				Assert.That(exceptResult, Is.EqualTo(0), $"Expect Result{Environment.NewLine}{message}");
+			});
 		}
 
 		protected void AreEqual<T>(IEnumerable<IEnumerable<T>> expected, IEnumerable<IEnumerable<T>> result)
@@ -102,16 +106,19 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			var resultList = result.ToList();
 			var expectedList = expected.ToList();
 
-			Assert.AreNotEqual(0, expectedList.Count);
-			Assert.AreEqual(expectedList.Count, resultList.Count, "Expected and result lists are different. Length: ");
+			Assert.Multiple(() =>
+			{
+				Assert.That(expectedList, Is.Not.Empty);
+				Assert.That(resultList, Has.Count.EqualTo(expectedList.Count), "Expected and result lists are different. Length: ");
+			});
 
 			for (var i = 0; i < resultList.Count; i++)
 			{
-				var elist = expectedList[i].ToList();
-				var rlist = resultList[i].ToList();
+				var expectedElement = expectedList[i].ToList();
+				var resultElement = resultList[i].ToList();
 
-				if (elist.Count > 0 || rlist.Count > 0)
-					AreEqual(elist, rlist);
+				if (expectedElement.Count > 0 || resultElement.Count > 0)
+					AreEqual(expectedElement, resultElement);
 			}
 		}
 
@@ -120,8 +127,11 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			var resultList = result.ToList();
 			var expectedList = expected.ToList();
 
-			Assert.AreNotEqual(0, expectedList.Count);
-			Assert.AreEqual(expectedList.Count, resultList.Count);
+			Assert.Multiple(() =>
+			{
+				Assert.That(expectedList, Is.Not.Empty);
+				Assert.That(resultList, Has.Count.EqualTo(expectedList.Count));
+			});
 
 			var b = expectedList.SequenceEqual(resultList);
 
@@ -129,7 +139,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 				for (var i = 0; i < resultList.Count; i++)
 					Debug.WriteLine("{0} {1} --- {2}", Equals(expectedList[i], resultList[i]) ? " " : "-", expectedList[i], resultList[i]);
 
-			Assert.IsTrue(b);
+			Assert.That(b, Is.True);
 		}
 
 	}

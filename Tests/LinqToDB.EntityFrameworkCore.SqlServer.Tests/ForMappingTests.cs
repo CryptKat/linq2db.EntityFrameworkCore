@@ -15,7 +15,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 	{
 		private bool _isDbCreated;
 
-		public override ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null)
+		protected override ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null)
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<ForMappingContext>();
 			optionsBuilder.UseSqlServer(Settings.ForMappingConnectionString);
@@ -46,11 +46,24 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 				var ms = LinqToDBForEFTools.GetMappingSchema(db.Model, db, null);
 				var ed = ms.GetEntityDescriptor(typeof(StringTypes));
 
-				ed.Columns.First(c => c.MemberName == nameof(StringTypes.AnsiString)).DataType.Should()
+				ed.Columns.First(c => c.MemberName == nameof(StringTypes.AsciiString)).DataType.Should()
 					.Be(DataType.VarChar);
 
 				ed.Columns.First(c => c.MemberName == nameof(StringTypes.UnicodeString)).DataType.Should()
 					.Be(DataType.NVarChar);
+			}
+		}
+
+		[Test(Description = "https://github.com/linq2db/linq2db.EntityFrameworkCore/issues/349")]
+		public void TestColumnLengthMappings()
+		{
+			using (var db = CreateContext())
+			{
+				var ms = LinqToDBForEFTools.GetMappingSchema(db.Model, db, null);
+				var ed = ms.GetEntityDescriptor(typeof(TypesTable));
+
+				ed.Columns.First(c => c.MemberName == nameof(TypesTable.DateTime)).Length.Should().BeNull();
+				ed.Columns.First(c => c.MemberName == nameof(TypesTable.String)).Length.Should().Be(100);
 			}
 		}
 
@@ -59,7 +72,7 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 		{
 			using var db = CreateContext(o => o.UseSqlServer("TODO:remove after fix from linq2db (not used)", SqlServerVersion.v2005));
 			using var dc = db.CreateLinqToDBConnectionDetached();
-			Assert.True(dc.MappingSchema.DisplayID.Contains("2005"));
+			Assert.That(dc.MappingSchema.DisplayID, Does.Contain("2005"));
 		}
 	}
 }

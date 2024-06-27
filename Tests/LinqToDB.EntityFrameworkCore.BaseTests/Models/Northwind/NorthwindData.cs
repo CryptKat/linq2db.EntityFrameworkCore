@@ -68,12 +68,6 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests.Models.Northwind
 				orderDetail.Product = product;
 				product.OrderDetails.Add(orderDetail);
 			}
-
-			// foreach (var employee in _employees)
-			// {
-			//     var manager = _employees.FirstOrDefault(e => employee.ReportsTo == e.EmployeeId);
-			//     employee.Manager = manager;
-			// }
 		}
 
 		public IQueryable<TEntity> Set<TEntity>()
@@ -109,7 +103,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests.Models.Northwind
 				return new AsyncEnumerable<TEntity>(_customerViews.Cast<TEntity>());
 			}
 
-			throw new InvalidOperationException("Invalid entity type: " + typeof(TEntity));
+			throw new InvalidOperationException(FormattableString.Invariant($"Invalid entity type: {typeof(TEntity)}"));
 		}
 
 		public static void Seed(DbContext context)
