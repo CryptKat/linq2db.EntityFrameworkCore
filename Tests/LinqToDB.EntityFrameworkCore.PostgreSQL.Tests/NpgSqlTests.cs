@@ -13,7 +13,7 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests
 {
 	public class NpgSqlTests : TestsBase
 	{
-		private DbContextOptions<NpgSqlEntitiesContext> _options;
+		private DbContextOptions<NpgSqlEnititesContext> _options;
 
 		static NpgSqlTests()
 		{
@@ -23,7 +23,7 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests
 
 		public NpgSqlTests()
 		{
-			var optionsBuilder = new DbContextOptionsBuilder<NpgSqlEntitiesContext>();
+			var optionsBuilder = new DbContextOptionsBuilder<NpgSqlEnititesContext>();
 
 			//optionsBuilder.UseNpgsql("Server=DBHost;Port=5432;Database=TestData;User Id=postgres;Password=TestPassword;Pooling=true;MinPoolSize=10;MaxPoolSize=100;", o => o.UseNodaTime());
 			optionsBuilder.UseNpgsql("Server=localhost;Port=5415;Database=TestData;User Id=postgres;Password=Password12!;Pooling=true;MinPoolSize=10;MaxPoolSize=100;", o => o.UseNodaTime());
@@ -32,9 +32,9 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests
 			_options = optionsBuilder.Options;
 		}
 
-		private NpgSqlEntitiesContext CreateNpgSqlEntitiesContext()
+		private NpgSqlEnititesContext CreateNpgSqlEntitiesContext()
 		{
-			var ctx = new NpgSqlEntitiesContext(_options);
+			var ctx = new NpgSqlEnititesContext(_options);
 			ctx.Database.EnsureDeleted();
 			ctx.Database.EnsureCreated();
 			ctx.Database.ExecuteSqlRaw("create schema \"views\"");
@@ -94,7 +94,7 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests
 			using var db = CreateNpgSqlEntitiesContext();
 
 			var toInsert = Enumerable.Range(1, 10)
-				.Select(i => new EntityWithXmin { Value = FormattableString.Invariant($"Str{i}") })
+				.Select(i => new EntityWithXmin { Value = "Str" + i })
 				.ToArray();
 
 			db.BulkCopy(toInsert);

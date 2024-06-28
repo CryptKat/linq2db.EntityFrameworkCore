@@ -12,7 +12,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 {
 	public abstract class ForMappingTestsBase : TestsBase
 	{
-		protected abstract ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null);
+		public abstract ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null);
 
 		[Test]
 		public virtual void TestIdentityMapping()
@@ -64,6 +64,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			};
 
 			t.BulkCopy(items);
+
 
 			items.Should().BeEquivalentTo(t);
 		}
@@ -125,10 +126,10 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			using var connection1 = context1.CreateLinqToDBConnection();
 			using var connection2 = context2.CreateLinqToDBConnection();
 
-			Assert.That(connection2.MappingSchema, Is.EqualTo(connection1.MappingSchema));
+			Assert.AreEqual(connection1.MappingSchema, connection2.MappingSchema);
 		}
 
-		protected sealed class TestEntity
+		sealed class TestEntity
 		{
 			public int Field { get; set; }
 		}
@@ -147,7 +148,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			using var connection1 = context1.CreateLinqToDBConnection();
 			using var connection2 = context2.CreateLinqToDBConnection();
 
-			Assert.That(connection2.MappingSchema, Is.EqualTo(connection1.MappingSchema));
+			Assert.AreEqual(connection1.MappingSchema, connection2.MappingSchema);
 
 			// check EF mapping is in place
 			var ed = connection1.MappingSchema.GetEntityDescriptor(typeof(WithIdentity));
@@ -158,25 +159,7 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests
 			ed = connection1.MappingSchema.GetEntityDescriptor(typeof(TestEntity));
 			pk = ed.Columns.Single(c => c.IsPrimaryKey);
 			pk.IsIdentity.Should().BeFalse();
-			Assert.That(pk.ColumnName, Is.EqualTo("Field"));
-		}
-
-		[Test]
-		public virtual async Task TestInheritance()
-		{
-			using var context = CreateContext();
-			using var connection = context.CreateLinqToDBConnection();
-			
-			context.WithInheritance.AddRange(new List<WithInheritanceA>() { new() { } });
-			context.WithInheritance.AddRange(new List<WithInheritanceA1>() { new() { }, new() { } });
-			context.WithInheritance.AddRange(new List<WithInheritanceA2>() { new() { }, new() { } });
-			await context.SaveChangesAsync();
-
-			var result = context.GetTable<WithInheritanceA>().ToList();
-			
-			result.OfType<WithInheritance>().Should().HaveCount(5);
-			result.OfType<WithInheritanceA1>().Should().HaveCount(2);
-			result.OfType<WithInheritanceA2>().Should().HaveCount(2);
+			Assert.AreEqual("Field", pk.ColumnName);
 		}
 	}
 }

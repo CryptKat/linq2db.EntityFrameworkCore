@@ -89,13 +89,5 @@ namespace LinqToDB.EntityFrameworkCore.SqlServer.Tests
 
 			var _ = ctx.Patents.AsSqlServer().ToLinqToDB().ToArray();
 		}
-
-		[Test(Description = "https://github.com/linq2db/linq2db.EntityFrameworkCore/issues/345")]
-		public void AsNoTrackingWithIdentityResolutionHandling()
-		{
-			using var ctx = CreateContext();
-
-			_ = ctx.Patents.AsNoTrackingWithIdentityResolution().ToLinqToDB().ToArray();
-		}
 	}
 }

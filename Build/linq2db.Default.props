@@ -1,22 +1,20 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project>
 	<PropertyGroup>
-		<Version>1.1.0</Version>
+		<Version>1.0.0</Version>
 		<PackageId>linq2db.EntityFrameworkCore.SoftLider</PackageId>
 		<RepositoryUrl>https://github.com/softlidermd/linq2db.EntityFrameworkCore</RepositoryUrl>
 		
 		<Authors>Svyatoslav Danyliv, Igor Tkachev, Dmitry Lukashenko, Ilya Chudin</Authors>
 		<Product>Linq to DB</Product>
 		<Company>linq2db.net</Company>
-		<Copyright>2002-2024 linq2db.net</Copyright>
+		<Copyright>2002-2023 linq2db.net</Copyright>
 		<RepositoryUrl>https://github.com/softlidermd/linq2db.EntityFrameworkCore</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-		<WarningLevel>9999</WarningLevel>
+		<WarningLevel>4</WarningLevel>
 		<ErrorReport>prompt</ErrorReport>
-		<Features>strict</Features>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 
 		<AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -31,25 +29,17 @@
 		<GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
 		<GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
 		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
-		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports> 
 
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 
-		<!--required for SkipLocalInit-->
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
-
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-		<RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
-		<AnalysisLevel>preview-All</AnalysisLevel>
-		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<ReportAnalyzer>true</ReportAnalyzer>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<AnalysisLevel>preview</AnalysisLevel>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<RunAnalyzers>true</RunAnalyzers>
 	</PropertyGroup>
 
 	<Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release'">

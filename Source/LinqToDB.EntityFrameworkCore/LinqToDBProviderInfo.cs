@@ -24,8 +24,8 @@
 		{
 			if (providerInfo != null)
 			{
-				Version ??= providerInfo.Version;
-				ProviderName ??= providerInfo.ProviderName;
+				Version = Version ?? providerInfo.Version;
+				ProviderName = ProviderName ?? providerInfo.ProviderName;
 			}
 		}
 	}

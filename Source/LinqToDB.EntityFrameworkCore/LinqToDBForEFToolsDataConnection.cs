@@ -161,9 +161,9 @@ namespace LinqToDB.EntityFrameworkCore
 			//
 			InternalEntityEntry? entry = null;
 
-			var cacheKey = new TypeKey (_lastEntityType, _model);
+			var kacheKey = new TypeKey (_lastEntityType, _model);
 
-			var retrievalFunc = _entityKeyGetterCache.GetOrCreate(cacheKey, ce =>
+			var retrievalFunc = _entityKeyGetterCache.GetOrCreate(kacheKey, ce =>
 			{
 				ce.SlidingExpiration = TimeSpan.FromHours(1);
 				return CreateEntityRetrievalFunc(((TypeKey)ce.Key).EntityType);
@@ -225,7 +225,7 @@ namespace LinqToDB.EntityFrameworkCore
 				body = Expression.Condition(checkExpression, invalidResult, body);
 			}
 
-			body = Expression.Block([variable], assignExpr, body);
+			body = Expression.Block(new[] { variable }, assignExpr, body);
 
 			var lambda =
 				Expression.Lambda<Func<IStateManager, object, Tuple<InternalEntityEntry?, bool>>>(body, stateManagerParam, objParam);

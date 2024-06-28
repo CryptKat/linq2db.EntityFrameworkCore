@@ -23,11 +23,6 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.Models.ForMapping
 			{
 				b.HasKey(e => e.Id);
 			});
-			
-			modelBuilder.Entity<WithInheritance>(b =>
-			{
-				b.HasDiscriminator(x => x.Discriminator);
-			});
 		}
 	}
 }

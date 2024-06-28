@@ -14,24 +14,23 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 	
 	public static class AAA
 	{
-		internal static ArrangeResult<T, Unit> Arrange<T>(this T @object, Action<T> action)
+		public static ArrangeResult<T, Unit> Arrange<T>(this T @object, Action<T> action)
 		{
 			action(@object);
 			return new ArrangeResult<T, Unit>(@object, default);
 		}
 
-		internal static ArrangeResult<T, Unit> Arrange<T>(T @object) 
+		public static ArrangeResult<T, Unit> Arrange<T>(T @object) 
 			=> new(@object, default);
 
-		internal static ArrangeResult<T, TMock> Arrange<T, TMock>(this TMock mock, Func<TMock, T> @object)
+		public static ArrangeResult<T, TMock> Arrange<T, TMock>(this TMock mock, Func<TMock, T> @object)
 			where TMock: notnull
 			=> new(@object(mock), mock);
 
-		internal static ActResult<T, TMock> Act<T, TMock>(this ArrangeResult<T, TMock> arrange, Action<T> act)
+		public static ActResult<T, TMock> Act<T, TMock>(this ArrangeResult<T, TMock> arrange, Action<T> act)
 			where T : notnull
 			where TMock : notnull
 		{
-#pragma warning disable CA1031 // Do not catch general exception types
 			try
 			{
 				act(arrange.Object);
@@ -41,14 +40,12 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			{
 				return new ActResult<T, TMock>(arrange.Object, arrange.Mock, e);
 			}
-#pragma warning restore CA1031 // Do not catch general exception types
 		}
 
-		internal static ActResult<TResult, TMock> Act<T, TMock, TResult>(this ArrangeResult<T, TMock> arrange, Func<T, TResult> act)
+		public static ActResult<TResult, TMock> Act<T, TMock, TResult>(this ArrangeResult<T, TMock> arrange, Func<T, TResult> act)
 			where TResult : notnull
 			where TMock : notnull
 		{
-#pragma warning disable CA1031 // Do not catch general exception types
 			try
 			{
 				return new ActResult<TResult, TMock>(act(arrange.Object), arrange.Mock, default);
@@ -57,10 +54,9 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			{
 				return new ActResult<TResult, TMock>(default, arrange.Mock, e);
 			}
-#pragma warning restore CA1031 // Do not catch general exception types
 		}
 
-		internal static void Assert<T, TMock>(this ActResult<T, TMock> act, Action<T?> assert)
+		public static void Assert<T, TMock>(this ActResult<T, TMock> act, Action<T?> assert)
 			where T : notnull
 			where TMock : notnull
 		{
@@ -68,7 +64,7 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			assert(act.Object);
 		}
 
-		internal static void Assert<T, TMock>(this ActResult<T, TMock> act, Action<T?, TMock?> assert)
+		public static void Assert<T, TMock>(this ActResult<T, TMock> act, Action<T?, TMock?> assert)
 			where T : notnull
 			where TMock : notnull
 		{
@@ -76,15 +72,14 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			assert(act.Object, act.Mock);
 		}
 
-		internal static Task<ArrangeResult<T, Unit>> ArrangeAsync<T>(T @object)
+		public static Task<ArrangeResult<T, Unit>> ArrangeAsync<T>(T @object)
 			=> Task.FromResult(new ArrangeResult<T, Unit>(@object, default));
 
-		internal static async Task<ActResult<TResult, TMock>> Act<T, TMock, TResult>(this Task<ArrangeResult<T, TMock>> arrange, Func<T, Task<TResult>> act)
+		public static async Task<ActResult<TResult, TMock>> Act<T, TMock, TResult>(this Task<ArrangeResult<T, TMock>> arrange, Func<T, Task<TResult>> act)
 			where TMock : notnull
 			where TResult : notnull
 		{
 			var a = await arrange;
-#pragma warning disable CA1031 // Do not catch general exception types
 			try
 			{
 				return new ActResult<TResult, TMock>(await act(a.Object), a.Mock, default);
@@ -93,10 +88,9 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			{
 				return new ActResult<TResult, TMock>(default, a.Mock, e);
 			}
-#pragma warning restore CA1031 // Do not catch general exception types
 		}
 
-		internal static async Task Assert<T, TMock>(this Task<ActResult<T, TMock>> act, Func<T?, Task> assert)
+		public static async Task Assert<T, TMock>(this Task<ActResult<T, TMock>> act, Func<T?, Task> assert)
 			where T : notnull
 			where TMock : notnull
 		{
@@ -104,10 +98,22 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			await assert(result.Object);
 		}
 
-		internal readonly record struct ArrangeResult<T, TMock>(T Object, TMock? Mock)
-			where TMock : notnull;
+		public readonly struct ArrangeResult<T, TMock>
+			where TMock : notnull
+		{
+			internal ArrangeResult(T @object, TMock? mock) => (Object, Mock) = (@object, mock);
+			internal T Object { get; }
+			internal TMock? Mock { get; }
+		}
 
-		internal readonly record struct ActResult<T, TMock>(T? Object, TMock? Mock, Exception? Exception)
-			where T: notnull;
+		public readonly struct ActResult<T, TMock>
+			where T: notnull
+		{
+			internal ActResult(T? @object, TMock? mock, Exception? exception)
+				=> (Object, Mock, Exception) = (@object, mock, exception);
+			internal T? Object { get; }
+			internal TMock? Mock { get; }
+			internal Exception? Exception { get; }
+		}
 	}
 }

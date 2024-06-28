@@ -10,7 +10,7 @@ namespace LinqToDB.EntityFrameworkCore.SQLite.Tests
 	[TestFixture]
 	public class ForMappingTests : ForMappingTestsBase
 	{
-		protected override ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null)
+		public override ForMappingContextBase CreateContext(Func<DataOptions, DataOptions>? optionsSetter = null)
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<ForMappingContext>();
 			optionsBuilder.UseSqlite("DataSource=:memory:");

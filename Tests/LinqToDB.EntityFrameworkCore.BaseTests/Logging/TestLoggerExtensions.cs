@@ -29,7 +29,10 @@ namespace LinqToDB.EntityFrameworkCore.BaseTests.Logging
 		/// <param name="configure">A delegate to configure the <see cref="ConsoleLogger"/>.</param>
 		public static ILoggingBuilder AddTestLogger(this ILoggingBuilder builder, Action<ConsoleLoggerOptions> configure)
 		{
-			ArgumentNullException.ThrowIfNull(configure);
+			if (configure == null)
+			{
+				throw new ArgumentNullException(nameof(configure));
+			}
 
 			builder.AddTestLogger();
 			builder.Services.Configure(configure);

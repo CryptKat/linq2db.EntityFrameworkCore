@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 {
@@ -13,7 +12,7 @@ namespace LinqToDB.EntityFrameworkCore.PostgreSQL.Tests.SampleTests
 			=> new(id);
 	}   
 	
-	public readonly struct Id<T, TId> : IEquatable<Id<T, TId>>
+	public readonly struct Id<T, TId>
 		where T : IHasId<T, TId>
 		where TId : notnull
 	{
