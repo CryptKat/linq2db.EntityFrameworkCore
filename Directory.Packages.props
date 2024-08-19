@@ -9,7 +9,7 @@
 		<PackageVersion Include="linq2db.Tools" Version="5.4.0" />
 
 		<PackageVersion Include="NUnit.Analyzers" Version="4.0.1" />
-		<PackageVersion Include="Meziantou.Analyzer" Version="2.0.145" />
+		<!--<PackageVersion Include="Meziantou.Analyzer" Version="2.0.145" />-->
 
 		<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
 

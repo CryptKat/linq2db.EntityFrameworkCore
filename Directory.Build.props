@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 		<PackageId>linq2db.EntityFrameworkCore.SoftLider</PackageId>
 		<RepositoryUrl>https://github.com/softlidermd/linq2db.EntityFrameworkCore</RepositoryUrl>
 		
